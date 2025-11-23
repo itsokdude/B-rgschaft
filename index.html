@@ -1,397 +1,367 @@
-import React, { useState } from 'react';
-import { ChevronRight, ChevronLeft, BookOpen, Users, PenTool, Crown, Eye, Volume2, Sword, Scroll, CloudLightning, Hand, Handshake, Waves, Sun, Footprints, Heart, Scale, Swords, Lock } from 'lucide-react';
-
-const SchillerPresentation = () => {
-  // --- STATE MANAGEMENT ---
-  const [mainPhase, setMainPhase] = useState(0); 
-  const [taskStep, setTaskStep] = useState(0); 
-  const [visibleTheseIndex, setVisibleTheseIndex] = useState(-1);
-  const [showTasks, setShowTasks] = useState(false);
-  const [revealedCards, setRevealedCards] = useState({});
-
-  // --- HELPER FUNCTIONS ---
-  const toggleCard = (step, cardIndex) => {
-    const key = `${step}-${cardIndex}`;
-    setRevealedCards(prev => ({
-      ...prev,
-      [key]: !prev[key]
-    }));
-  };
-
-  // --- DATEN & INHALTE ---
-  
-  const thesen = [
-    "Ein guter Freund muss immer Zeit für mich haben.",
-    "Freunde sind wichtiger als die Familie.",
-    "Ich würde für meinen besten Freund lügen.",
-    "Echte Freundschaft beweist sich erst in der Not.",
-    "Ich würde mein Leben für einen Freund riskieren."
-  ];
-
-  const tasks = [
-    {
-      title: "Der Pakt",
-      range: "Bis Vers 56 (Strophe 8)",
-      // Neutral formuliert, um nicht zu spoilern
-      instruction: "Wir hören den ersten Teil der Ballade. Achtet auf die Abmachung mit dem Tyrannen.",
-      // Visuelles Thema: Dunkel, Bedrohung, Macht
-      bgOverlay: "bg-stone-900/60",
-      questions: [
-        { 
-          type: "Diskussion", 
-          icon: <Scale size={24} />,
-          text: "Damon setzt das Leben seines Freundes als Pfand ein.\n\nIst das ein Beweis für bedingungsloses Vertrauen oder nutzt er die Freundschaft aus?",
-          isSecret: false
-        }
-      ]
-    },
-    {
-      title: "Die Prüfung",
-      range: "Weiter bis Vers 112 (Strophe 16)",
-      // Neutral formuliert - Hindernisse werden nicht verraten
-      instruction: "Damon tritt den Rückweg an. Doch die Zeit drängt und die Natur stellt sich ihm in den Weg...",
-      // Visuelles Thema: Sturm, Chaos
-      bgOverlay: "bg-blue-900/60",
-      questions: [
-        { 
-          type: "Schreibauftrag", 
-          icon: <PenTool size={24} />,
-          text: "Situation: Sein Haushälter Philostratus kommt ihm entgegen und ruft: 'Zurück! Du rettest den Freund nicht mehr, so rette das eigene Leben!'\n\nVerfasst einen kurzen inneren Monolog Damons:\nWas geht ihm durch den Kopf? Was fühlt er?",
-          isSecret: false
-        }
-      ]
-    },
-    {
-      title: "Die Wendung?",
-      range: "Bis zum Ende",
-      instruction: "Wir hören den Schluss der Ballade.",
-      // Visuelles Thema: Licht, Erkenntnis
-      bgOverlay: "bg-amber-900/50",
-      questions: [
-        { 
-          type: "Analyse", 
-          icon: <Eye size={24} />,
-          text: "Achtet auf den Tyrannen Dionysios: Wie reagiert er, als Damon doch noch auftaucht?",
-          isSecret: false
-        },
-        { 
-          type: "Finale", 
-          icon: <Scroll size={24} />,
-          text: "'Ich sei, gewährt mir die Bitte,\nin eurem Bunde der Dritte!'",
-          isSecret: true // Initial verdeckt (Schloss-Icon)
-        }
-      ]
-    }
-  ];
-
-  // --- NAVIGATION HANDLER ---
-  
-  const nextStep = () => {
-    setShowTasks(false); 
-    setRevealedCards({}); 
-    if (taskStep < tasks.length - 1) {
-      setTaskStep(s => s + 1);
-    }
-  };
-
-  const prevStep = () => {
-    setShowTasks(false); 
-    if (taskStep > 0) {
-      setTaskStep(s => s - 1);
-    }
-  };
-
-  // --- VISUAL COMPONENTS ---
-
-  const SceneVisual = ({ step }) => {
-    if (step === 0) {
-      return (
-        <div className="relative w-64 h-64 mx-auto animate-fade-in">
-           <div className="absolute top-0 left-0 text-stone-700 transform -rotate-12 scale-110 opacity-80">
-             <Sword size={140} strokeWidth={1} />
-           </div>
-           <div className="absolute bottom-4 right-4 text-amber-800 drop-shadow-lg transform rotate-6 bg-[#fdfbf7]/70 p-4 rounded-full border-4 border-amber-900/20 backdrop-blur-sm">
-             <Handshake size={80} strokeWidth={1.5} />
-           </div>
-           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-2 border-dashed border-stone-600 rounded-full animate-spin-slow opacity-40"></div>
-        </div>
-      );
-    }
-    if (step === 1) {
-      return (
-        <div className="relative w-64 h-64 mx-auto animate-fade-in text-blue-100">
-           <div className="absolute top-4 left-0">
-             <Sun size={100} strokeWidth={1.5} className="text-amber-300/70 animate-pulse" />
-           </div>
-           <div className="absolute bottom-0 left-0 w-full flex justify-center opacity-60">
-              <Waves size={140} strokeWidth={1} className="-ml-16 text-blue-200" />
-              <Waves size={140} strokeWidth={1} className="-ml-16 text-blue-300" />
-           </div>
-           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-stone-600 opacity-80 mix-blend-overlay">
-              {/* Symbol für die Gefahr auf dem Weg */}
-              <Swords size={64} strokeWidth={1.5} className="transform rotate-12" />
-           </div>
-        </div>
-      );
-    }
-    if (step === 2) {
-      return (
-        <div className="relative w-64 h-64 mx-auto animate-fade-in">
-           <div className="absolute top-0 left-1/2 -translate-x-1/2 text-amber-100 opacity-40">
-             <Crown size={140} strokeWidth={1} />
-           </div>
-           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-red-600 drop-shadow-2xl z-10">
-              <Heart size={100} strokeWidth={1.5} fill="#991b1b" fillOpacity={0.7} className="animate-pulse" />
-           </div>
-           <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-amber-200 z-20 font-serif text-4xl font-bold">+</div>
-           <div className="absolute -right-4 bottom-12 text-amber-400">
-             <Users size={60} strokeWidth={1.5} />
-           </div>
-        </div>
-      );
-    }
-    return null;
-  };
-
-  const QuestionCard = ({ q, index, step }) => {
-    const isSingle = tasks[step].questions.length === 1;
-    const isSecretAndHidden = q.isSecret && !revealedCards[`${step}-${index}`];
-
-    return (
-      <div 
-        onClick={q.isSecret ? () => toggleCard(step, index) : undefined}
-        className={`relative bg-white/95 backdrop-blur-sm p-8 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.1)] border-2 border-stone-200/50 transition-all duration-500 overflow-hidden group hover:shadow-lg
-          ${isSingle ? 'md:col-span-2 md:max-w-2xl md:mx-auto' : ''}
-          ${q.isSecret ? 'cursor-pointer hover:border-amber-300' : 'hover:border-amber-300'}
-        `}
-      >
-        {isSecretAndHidden && (
-          <div className="absolute inset-0 bg-[#fdfbf7] z-20 flex flex-col items-center justify-center transition-opacity">
-            <div className="bg-amber-100 p-4 rounded-full mb-4 animate-bounce border border-amber-200">
-              <Lock size={32} className="text-amber-800" />
-            </div>
-            <span className="font-serif font-bold text-amber-900 uppercase tracking-widest text-sm border-b-2 border-amber-200 pb-1">
-              Zitat aufdecken
-            </span>
-          </div>
-        )}
-
-        <div className="flex items-center gap-3 mb-6 border-b border-stone-200/50 pb-4">
-            <span className="text-amber-800 bg-amber-100/50 p-2 rounded-full shadow-sm">{q.icon}</span>
-            <span className="text-xs font-bold uppercase tracking-widest text-amber-950 font-serif">
-              {q.type}
-            </span>
-        </div>
-        <p className="text-xl md:text-2xl font-serif text-slate-900 leading-relaxed whitespace-pre-line">
-          {q.text}
-        </p>
-      </div>
-    );
-  };
-
-  // --- PHASE 0: EINSTIEG ---
-  
-  const EntryPhase = () => (
-    <div className="h-full flex flex-col items-center justify-center p-8 bg-[#fdfbf7] relative overflow-hidden">
-      <div className="absolute inset-0 opacity-20 pointer-events-none mix-blend-multiply" 
-           style={{
-             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
-           }}>
-      </div>
-
-      <div className="mb-8 text-center z-10 mt-12">
-        <h1 className="text-6xl font-serif font-bold text-slate-800 tracking-wide mb-4 drop-shadow-sm">
-          Was ist Freundschaft?
-        </h1>
-        <div className="inline-flex items-center gap-2 px-6 py-2 bg-white border border-stone-300 rounded-full shadow-sm text-stone-600 font-serif italic text-lg">
-          <Hand size={20} /> Abstimmung per Handzeichen
-        </div>
-      </div>
-
-      <div className="relative w-full max-w-4xl h-80 flex justify-center items-center perspective-1000 z-10">
-        {thesen.map((theseText, idx) => {
-          const isCurrent = idx === visibleTheseIndex;
-          if (idx > visibleTheseIndex) return null;
-
-          return (
-            <div 
-              key={idx}
-              className={`absolute w-full max-w-2xl bg-[#fffefc] p-12 rounded-lg border-4 border-double border-stone-200 shadow-[0_10px_40px_rgba(0,0,0,0.1)] flex flex-col items-center justify-center text-center transition-all duration-700 transform
-                ${isCurrent ? 'scale-100 opacity-100 translate-y-0 z-20' : 'scale-90 opacity-0 -translate-y-20 z-0'}
-              `}
-            >
-              <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-amber-900/10 rounded-full"></div>
-              <h3 className="text-4xl font-serif text-slate-900 leading-snug">
-                {theseText}
-              </h3>
-            </div>
-          );
-        })}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Die Bürgschaft - Interaktive Tafel</title>
+    
+    <!-- React laden -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel laden (damit der Code im Browser läuft) -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS laden (für das Aussehen) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Schriftart laden -->
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Lato', sans-serif; background-color: #fdfbf7; }
+        h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
         
-        {visibleTheseIndex === -1 && (
-          <div className="flex flex-col items-center animate-fade-in">
-             <div className="w-24 h-24 rounded-full bg-red-900 text-white flex items-center justify-center shadow-2xl mb-6 border-4 border-white ring-4 ring-red-100 cursor-pointer hover:scale-105 transition-transform"
-                  onClick={() => setVisibleTheseIndex(0)}>
-                <ChevronRight size={40} />
-             </div>
-             <p className="text-stone-400 font-serif uppercase tracking-widest text-sm">Starten</p>
-          </div>
-        )}
-      </div>
-
-      <div className="mt-12 flex gap-4 z-10 h-20 items-center">
-        {visibleTheseIndex >= 0 && (
-          <>
-            <button 
-              onClick={() => setVisibleTheseIndex(-1)}
-              className="px-6 py-3 text-stone-400 hover:text-red-900 transition font-bold uppercase tracking-widest text-xs"
-            >
-              Neustart
-            </button>
-
-            <button 
-              onClick={() => setVisibleTheseIndex(prev => Math.min(prev + 1, thesen.length - 1))}
-              disabled={visibleTheseIndex >= thesen.length - 1}
-              className="px-10 py-4 bg-slate-800 text-white rounded shadow-lg hover:bg-slate-700 transition disabled:opacity-0 disabled:pointer-events-none font-serif font-bold text-lg flex items-center gap-3 border border-slate-600"
-            >
-              Nächste These <ChevronRight size={20} />
-            </button>
-
-            {visibleTheseIndex === thesen.length - 1 && (
-              <button 
-              onClick={() => setMainPhase(1)}
-              className="px-10 py-4 bg-red-900 text-white rounded shadow-lg hover:bg-red-800 transition font-serif font-bold text-lg flex items-center gap-3 border border-red-950 animate-pulse"
-            >
-              Zur Ballade <BookOpen size={20} />
-            </button>
-            )}
-          </>
-        )}
-      </div>
-    </div>
-  );
-
-  // --- PHASE 1: HAUPTTEIL (ARBEITSPHASE) ---
-  
-  const WorkPhase = () => {
-    const currentTask = tasks[taskStep];
-
-    return (
-      <div className="h-full flex flex-col bg-[#fdfbf7] relative overflow-hidden">
-        {/* Background Overlays */}
-        <div className={`absolute inset-0 transition-colors duration-1000 ${currentTask.bgOverlay}`}></div>
-        
-        <div className="absolute inset-0 opacity-30 pointer-events-none mix-blend-overlay" 
-             style={{
-                backgroundImage: 'radial-gradient(#78716c 1px, transparent 1px)', 
-                backgroundSize: '32px 32px'
-             }}>
-        </div>
-        
-        {/* Header */}
-        <header className="h-20 bg-[#fdfbf7]/80 backdrop-blur-md border-b border-double border-stone-300/50 flex items-center justify-between px-8 z-20 sticky top-0 shadow-sm">
-          <h2 className="text-2xl font-serif font-bold text-slate-900 flex items-center gap-3">
-            <span className="w-8 h-8 bg-red-900 text-white flex items-center justify-center rounded font-serif text-lg shadow-sm">S</span>
-            <span className="drop-shadow-sm">Die Bürgschaft</span>
-          </h2>
-          <div className="w-48 h-1.5 bg-stone-200/50 rounded-full overflow-hidden shadow-inner">
-            <div 
-              className="h-full bg-red-900 transition-all duration-700 ease-out"
-              style={{ width: `${((taskStep + 1) / 3) * 100}%` }}
-            />
-          </div>
-        </header>
-
-        {/* Content Area */}
-        <div className="flex-grow overflow-y-auto flex flex-col items-center p-6 md:p-12 scroll-smooth z-10">
-          <div className="max-w-5xl w-full space-y-12 animate-fade-in pb-32">
-            
-            {/* Instruction Section */}
-            <div className="text-center space-y-6 relative text-slate-900">
-              
-              <div className="mb-8 transform scale-110 filter drop-shadow-lg">
-                 <SceneVisual step={taskStep} />
-              </div>
-
-              <div className="inline-block border-b-2 border-amber-500/70 pb-1 mb-2">
-                 <span className="font-serif text-xs font-bold text-amber-900 tracking-[0.2em] uppercase drop-shadow-sm">
-                   {currentTask.range}
-                 </span>
-              </div>
-              
-              <h3 className="text-5xl md:text-6xl font-serif font-bold leading-tight drop-shadow-md text-slate-900 mb-8">
-                {currentTask.title}
-              </h3>
-              
-              {!showTasks && (
-                <>
-                  <div className="max-w-2xl mx-auto bg-white/80 p-6 rounded-lg border border-stone-200/50 shadow-lg mt-8 backdrop-blur-md mb-12 animate-fade-in">
-                     <div className="flex items-center justify-center gap-3 text-stone-700 text-xl font-serif italic">
-                        <Volume2 className="text-red-900 drop-shadow-sm" size={24} />
-                        {currentTask.instruction}
-                     </div>
-                  </div>
-                  <button 
-                    onClick={() => setShowTasks(true)}
-                    className="px-8 py-4 bg-amber-600 text-white rounded-lg shadow-lg hover:bg-amber-700 transition font-serif font-bold text-lg flex items-center gap-3 mx-auto animate-pulse"
-                  >
-                    Impulse öffnen <ChevronRight size={24} />
-                  </button>
-                </>
-              )}
-            </div>
-
-            {/* Tasks Grid */}
-            {showTasks && (
-              <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto w-full animate-slide-up">
-                {currentTask.questions.map((q, i) => (
-                  <QuestionCard key={i} q={q} index={i} step={taskStep} />
-                ))}
-              </div>
-            )}
-
-          </div>
-        </div>
-
-        {/* Footer Navigation */}
-        <footer className="h-24 bg-[#fdfbf7]/90 backdrop-blur-md border-t border-stone-200/50 flex items-center justify-between px-10 z-20 fixed bottom-0 left-0 right-0 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
-          <button 
-            onClick={prevStep}
-            disabled={taskStep === 0}
-            className="flex items-center gap-2 px-6 py-3 rounded text-stone-600 hover:text-slate-900 disabled:opacity-30 font-serif font-bold transition-colors uppercase tracking-wider text-sm"
-          >
-            <ChevronLeft size={18} /> Zurück
-          </button>
-
-          {taskStep < tasks.length - 1 && (
-             <button 
-               onClick={nextStep}
-               className="flex items-center gap-3 px-8 py-3 bg-slate-900 text-white rounded shadow-lg hover:bg-slate-800 hover:scale-105 transition-all font-serif font-bold tracking-wide text-lg border border-slate-950"
-             >
-               Weiter <ChevronRight size={20} />
-             </button>
-          )}
-        </footer>
-      </div>
-    );
-  };
-
-  // --- MAIN RENDER ---
-  
-  return (
-    <div className="w-full h-screen overflow-hidden font-sans text-slate-800 selection:bg-amber-100 bg-[#fdfbf7]">
-      <style>{`
+        /* Animationen */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .animate-fade-in { animation: fadeIn 0.8s ease-out forwards; }
         .animate-slide-up { animation: fadeIn 0.6s ease-out forwards; }
-        
         @keyframes spin-slow { from { transform: translate(-50%, -50%) rotate(0deg); } to { transform: translate(-50%, -50%) rotate(360deg); } }
         .animate-spin-slow { animation: spin-slow 30s linear infinite; }
-      `}</style>
+    </style>
+</head>
+<body>
+    <div id="root"></div>
 
-      {mainPhase === 0 ? <EntryPhase /> : <WorkPhase />}
-    </div>
-  );
-};
+    <!-- HIER BEGINNT DER PROGRAMMCODE -->
+    <script type="text/babel">
+        const { useState } = React;
 
-export default SchillerPresentation;
+        // --- 1. ICONS (Direkt eingebaut - keine Import-Fehler mehr) ---
+        const Icon = ({ children, className, size = 24, strokeWidth = 2 }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
+        );
+
+        // Alle benötigten Symbole
+        const ChevronRight = (p) => <Icon {...p}><path d="m9 18 6-6-6-6"/></Icon>;
+        const ChevronLeft = (p) => <Icon {...p}><path d="m15 18-6-6 6-6"/></Icon>;
+        const Lock = (p) => <Icon {...p}><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></Icon>;
+        const Scale = (p) => <Icon {...p}><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></Icon>;
+        const PenTool = (p) => <Icon {...p}><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></Icon>;
+        const Eye = (p) => <Icon {...p}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></Icon>;
+        const Scroll = (p) => <Icon {...p}><path d="M8 21h12a2 2 0 0 0 2-2v-2a10 10 0 0 0-10-10h-5v14a3 3 0 0 1-6 0V5a2 2 0 0 1 2-2h5a2 2 0 0 1 2 2v14a3 3 0 0 1-3 3z"/></Icon>;
+        const Volume2 = (p) => <Icon {...p}><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></Icon>;
+        const Hand = (p) => <Icon {...p}><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></Icon>;
+        const BookOpen = (p) => <Icon {...p}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></Icon>;
+        const Sword = (p) => <Icon {...p}><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></Icon>;
+        const Handshake = (p) => <Icon {...p}><path d="m11 17 2 2a6 6 0 0 0 8-8l-2-2 2-2-2-2-2 2-2-2-2 2-2 2"/><path d="M11 17a6 6 0 0 1-8-8l2-2 2 2 2-2 2 2 2 2-2 2"/></Icon>;
+        const CloudLightning = (p) => <Icon {...p}><path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m13 12-3 5h4l-3 5"/></Icon>;
+        const Waves = (p) => <Icon {...p}><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></Icon>;
+        const Sun = (p) => <Icon {...p}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></Icon>;
+        const Swords = (p) => <Icon {...p}><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></Icon>;
+        const Crown = (p) => <Icon {...p}><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></Icon>;
+        const Heart = (p) => <Icon {...p}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></Icon>;
+        const Users = (p) => <Icon {...p}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></Icon>;
+
+        // --- 2. DIE APP-LOGIK ---
+        const SchillerPresentation = () => {
+          const [mainPhase, setMainPhase] = useState(0); 
+          const [taskStep, setTaskStep] = useState(0); 
+          const [visibleTheseIndex, setVisibleTheseIndex] = useState(-1);
+          const [showTasks, setShowTasks] = useState(false);
+          const [revealedCards, setRevealedCards] = useState({});
+
+          const toggleCard = (step, cardIndex) => {
+            const key = `${step}-${cardIndex}`;
+            setRevealedCards(prev => ({ ...prev, [key]: !prev[key] }));
+          };
+
+          // --- DATEN ---
+          const thesen = [
+            "Ein guter Freund muss immer Zeit für mich haben.",
+            "Freunde sind wichtiger als die Familie.",
+            "Ich würde für meinen besten Freund lügen.",
+            "Echte Freundschaft beweist sich erst in der Not.",
+            "Ich würde mein Leben für einen Freund riskieren."
+          ];
+
+          const tasks = [
+            {
+              title: "Der Pakt",
+              range: "Bis Vers 56 (Strophe 8)",
+              instruction: "Wir hören den ersten Teil der Ballade. Achtet auf die Abmachung mit dem Tyrannen.",
+              bgOverlay: "bg-stone-900/60",
+              questions: [
+                { 
+                  type: "Diskussion", 
+                  icon: <Scale size={24} />,
+                  text: "Damon setzt das Leben seines Freundes als Pfand ein.\n\nIst das ein Beweis für bedingungsloses Vertrauen oder nutzt er die Freundschaft aus?",
+                  isSecret: false
+                }
+              ]
+            },
+            {
+              title: "Die Prüfung",
+              range: "Weiter bis Vers 112 (Strophe 16)",
+              instruction: "Damon tritt den Rückweg an. Doch die Zeit drängt und die Natur stellt sich ihm in den Weg...",
+              bgOverlay: "bg-blue-900/60",
+              questions: [
+                { 
+                  type: "Schreibauftrag", 
+                  icon: <PenTool size={24} />,
+                  text: "Situation: Sein Haushälter Philostratus kommt ihm entgegen und ruft: 'Zurück! Du rettest den Freund nicht mehr, so rette das eigene Leben!'\n\nVerfasst einen kurzen inneren Monolog Damons:\nWas geht ihm durch den Kopf? Was fühlt er?",
+                  isSecret: false
+                }
+              ]
+            },
+            {
+              title: "Die Wendung?",
+              range: "Bis zum Ende",
+              instruction: "Wir hören den Schluss der Ballade.",
+              bgOverlay: "bg-amber-900/50",
+              questions: [
+                { 
+                  type: "Analyse", 
+                  icon: <Eye size={24} />,
+                  text: "Achtet auf den Tyrannen Dionysios: Wie reagiert er, als Damon doch noch auftaucht?",
+                  isSecret: false
+                },
+                { 
+                  type: "Finale", 
+                  icon: <Scroll size={24} />,
+                  text: "'Ich sei, gewährt mir die Bitte,\nin eurem Bunde der Dritte!'",
+                  isSecret: true 
+                }
+              ]
+            }
+          ];
+
+          // Navigation
+          const nextStep = () => {
+            setShowTasks(false);
+            setRevealedCards({});
+            if (taskStep < tasks.length - 1) {
+              setTaskStep(s => s + 1);
+            }
+          };
+
+          const prevStep = () => {
+            setShowTasks(false);
+            if (taskStep > 0) {
+              setTaskStep(s => s - 1);
+            }
+          };
+
+          // Visuelle Komponenten
+          const SceneVisual = ({ step }) => {
+            if (step === 0) {
+              return (
+                <div className="relative w-64 h-64 mx-auto animate-fade-in">
+                   <div className="absolute top-0 left-0 text-stone-700 transform -rotate-12 scale-110 opacity-80"><Sword size={140} strokeWidth={1} /></div>
+                   {/* HANDSCHLAG SYMBOL - Hier angepasst (gerade, deutlich) */}
+                   <div className="absolute bottom-4 right-4 text-amber-800 drop-shadow-lg bg-[#fdfbf7]/90 p-5 rounded-full border-4 border-amber-900/20 backdrop-blur-sm">
+                     <Handshake size={80} strokeWidth={2} />
+                   </div>
+                   <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-2 border-dashed border-stone-600 rounded-full animate-spin-slow opacity-40"></div>
+                </div>
+              );
+            }
+            if (step === 1) {
+              return (
+                <div className="relative w-64 h-64 mx-auto animate-fade-in text-blue-100">
+                   <div className="absolute top-4 left-0"><Sun size={100} strokeWidth={1.5} className="text-amber-300/70 animate-pulse" /></div>
+                   <div className="absolute bottom-0 left-0 w-full flex justify-center opacity-60">
+                      <Waves size={140} strokeWidth={1} className="-ml-16 text-blue-200" />
+                      <Waves size={140} strokeWidth={1} className="-ml-16 text-blue-300" />
+                   </div>
+                   <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-stone-600 opacity-80 mix-blend-overlay">
+                      <Swords size={64} strokeWidth={1.5} className="transform rotate-12" />
+                   </div>
+                </div>
+              );
+            }
+            if (step === 2) {
+              return (
+                <div className="relative w-64 h-64 mx-auto animate-fade-in">
+                   <div className="absolute top-0 left-1/2 -translate-x-1/2 text-amber-100 opacity-40"><Crown size={140} strokeWidth={1} /></div>
+                   <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-red-600 drop-shadow-2xl z-10">
+                      <Heart size={100} strokeWidth={1.5} fill="#991b1b" fillOpacity={0.7} className="animate-pulse" />
+                   </div>
+                   <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-amber-200 z-20 font-serif text-4xl font-bold">+</div>
+                   <div className="absolute -right-4 bottom-12 text-amber-400"><Users size={60} strokeWidth={1.5} /></div>
+                </div>
+              );
+            }
+            return null;
+          };
+
+          const QuestionCard = ({ q, index, step }) => {
+            const isSingle = tasks[step].questions.length === 1;
+            const isSecretAndHidden = q.isSecret && !revealedCards[`${step}-${index}`];
+
+            return (
+              <div 
+                onClick={q.isSecret ? () => toggleCard(step, index) : undefined}
+                className={`relative bg-white/95 backdrop-blur-sm p-8 rounded-lg shadow-[0_4px_20px_rgba(0,0,0,0.1)] border-2 border-stone-200/50 transition-all duration-500 overflow-hidden group 
+                  ${isSingle ? 'md:col-span-2 md:max-w-2xl md:mx-auto' : ''}
+                  ${q.isSecret ? 'cursor-pointer hover:border-amber-300' : 'hover:border-amber-300'}
+                `}
+              >
+                {isSecretAndHidden && (
+                  <div className="absolute inset-0 bg-[#fdfbf7] z-20 flex flex-col items-center justify-center transition-opacity">
+                    <div className="bg-amber-100 p-4 rounded-full mb-4 animate-bounce border border-amber-200">
+                      <Lock size={32} className="text-amber-800" />
+                    </div>
+                    <span className="font-serif font-bold text-amber-900 uppercase tracking-widest text-sm border-b-2 border-amber-200 pb-1">
+                      Zitat aufdecken
+                    </span>
+                  </div>
+                )}
+
+                <div className="flex items-center gap-3 mb-6 border-b border-stone-200/50 pb-4">
+                    <span className="text-amber-800 bg-amber-100/50 p-2 rounded-full shadow-sm">{q.icon}</span>
+                    <span className="text-xs font-bold uppercase tracking-widest text-amber-950 font-serif">
+                      {q.type}
+                    </span>
+                </div>
+                <p className="text-xl md:text-2xl font-serif text-slate-900 leading-relaxed whitespace-pre-line">
+                  {q.text}
+                </p>
+              </div>
+            );
+          };
+
+          // --- PHASE 0: EINSTIEG ---
+          const EntryPhase = () => (
+            <div className="h-full flex flex-col items-center justify-center p-8 bg-[#fdfbf7] relative overflow-hidden">
+              <div className="absolute inset-0 opacity-20 pointer-events-none mix-blend-multiply" 
+                   style={{
+                     backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                   }}>
+              </div>
+
+              <div className="mb-8 text-center z-10 mt-12">
+                <h1 className="text-6xl font-serif font-bold text-slate-800 tracking-wide mb-4 drop-shadow-sm">
+                  Was ist Freundschaft?
+                </h1>
+                <div className="inline-flex items-center gap-2 px-6 py-2 bg-white border border-stone-300 rounded-full shadow-sm text-stone-600 font-serif italic text-lg">
+                  <Hand size={20} /> Abstimmung per Handzeichen
+                </div>
+              </div>
+
+              <div className="relative w-full max-w-4xl h-80 flex justify-center items-center perspective-1000 z-10">
+                {thesen.map((theseText, idx) => {
+                  const isCurrent = idx === visibleTheseIndex;
+                  if (idx > visibleTheseIndex) return null;
+
+                  return (
+                    <div key={idx} className={`absolute w-full max-w-2xl bg-[#fffefc] p-12 rounded-lg border-4 border-double border-stone-200 shadow-[0_10px_40px_rgba(0,0,0,0.1)] flex flex-col items-center justify-center text-center transition-all duration-700 transform ${isCurrent ? 'scale-100 opacity-100 translate-y-0 z-20' : 'scale-90 opacity-0 -translate-y-20 z-0'}`}>
+                      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-amber-900/10 rounded-full"></div>
+                      <h3 className="text-4xl font-serif text-slate-900 leading-snug">{theseText}</h3>
+                    </div>
+                  );
+                })}
+                
+                {visibleTheseIndex === -1 && (
+                  <div className="flex flex-col items-center animate-fade-in">
+                     <div className="w-24 h-24 rounded-full bg-red-900 text-white flex items-center justify-center shadow-2xl mb-6 border-4 border-white ring-4 ring-red-100 cursor-pointer hover:scale-105 transition-transform" onClick={() => setVisibleTheseIndex(0)}>
+                        <ChevronRight size={40} />
+                     </div>
+                     <p className="text-stone-400 font-serif uppercase tracking-widest text-sm">Starten</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="mt-12 flex gap-4 z-10 h-20 items-center">
+                {visibleTheseIndex >= 0 && (
+                  <>
+                    <button onClick={() => setVisibleTheseIndex(-1)} className="px-6 py-3 text-stone-400 hover:text-red-900 transition font-bold uppercase tracking-widest text-xs">Neustart</button>
+                    <button onClick={() => setVisibleTheseIndex(prev => Math.min(prev + 1, thesen.length - 1))} disabled={visibleTheseIndex >= thesen.length - 1} className="px-10 py-4 bg-slate-800 text-white rounded shadow-lg hover:bg-slate-700 transition disabled:opacity-0 disabled:pointer-events-none font-serif font-bold text-lg flex items-center gap-3 border border-slate-600">Nächste These <ChevronRight size={20} /></button>
+                    {visibleTheseIndex === thesen.length - 1 && (
+                      <button onClick={() => setMainPhase(1)} className="px-10 py-4 bg-red-900 text-white rounded shadow-lg hover:bg-red-800 transition font-serif font-bold text-lg flex items-center gap-3 border border-red-950 animate-pulse">Zur Ballade <BookOpen size={20} /></button>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          );
+
+          // --- PHASE 1: HAUPTTEIL (ARBEITSPHASE) ---
+          const WorkPhase = () => {
+            const currentTask = tasks[taskStep];
+
+            return (
+              <div className="h-full flex flex-col bg-[#fdfbf7] relative overflow-hidden">
+                {/* Background Overlays */}
+                <div className={`absolute inset-0 transition-colors duration-1000 ${currentTask.bgOverlay}`}></div>
+                <div className="absolute inset-0 opacity-30 pointer-events-none mix-blend-overlay" style={{backgroundImage: 'radial-gradient(#78716c 1px, transparent 1px)', backgroundSize: '32px 32px'}}></div>
+                
+                <header className="h-20 bg-[#fdfbf7]/80 backdrop-blur-md border-b border-double border-stone-300/50 flex items-center justify-between px-8 z-20 sticky top-0 shadow-sm">
+                  <h2 className="text-2xl font-serif font-bold text-slate-900 flex items-center gap-3">
+                    <span className="w-8 h-8 bg-red-900 text-white flex items-center justify-center rounded font-serif text-lg shadow-sm">S</span>
+                    <span className="drop-shadow-sm">Die Bürgschaft</span>
+                  </h2>
+                  <div className="w-48 h-1.5 bg-stone-200/50 rounded-full overflow-hidden shadow-inner">
+                    <div className="h-full bg-red-900 transition-all duration-700 ease-out" style={{ width: `${((taskStep + 1) / 3) * 100}%` }} />
+                  </div>
+                </header>
+
+                <div className="flex-grow overflow-y-auto flex flex-col items-center p-6 md:p-12 scroll-smooth z-10">
+                  <div className="max-w-5xl w-full space-y-12 animate-fade-in pb-32">
+                    <div className="text-center space-y-6 relative text-slate-900">
+                      <div className="mb-8 transform scale-110 filter drop-shadow-lg">
+                         <SceneVisual step={taskStep} />
+                      </div>
+                      <div className="inline-block border-b-2 border-amber-500/70 pb-1 mb-2">
+                         <span className="font-serif text-xs font-bold text-amber-900 tracking-[0.2em] uppercase drop-shadow-sm">{currentTask.range}</span>
+                      </div>
+                      <h3 className="text-5xl md:text-6xl font-serif font-bold leading-tight drop-shadow-md text-slate-900 mb-8">{currentTask.title}</h3>
+                      
+                      {!showTasks && (
+                        <>
+                          <div className="max-w-2xl mx-auto bg-white/80 p-6 rounded-lg border border-stone-200/50 shadow-lg mt-8 backdrop-blur-md mb-12 animate-fade-in">
+                             <div className="flex items-center justify-center gap-3 text-stone-700 text-xl font-serif italic">
+                                <Volume2 className="text-red-900 drop-shadow-sm" size={24} />
+                                {currentTask.instruction}
+                             </div>
+                          </div>
+                          <button onClick={() => setShowTasks(true)} className="px-8 py-4 bg-amber-600 text-white rounded-lg shadow-lg hover:bg-amber-700 transition font-serif font-bold text-lg flex items-center gap-3 mx-auto animate-pulse">
+                            Impulse öffnen <ChevronRight size={24} />
+                          </button>
+                        </>
+                      )}
+                    </div>
+
+                    {showTasks && (
+                      <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto w-full animate-slide-up">
+                        {currentTask.questions.map((q, i) => (
+                          <QuestionCard key={i} q={q} index={i} step={taskStep} />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <footer className="h-24 bg-[#fdfbf7]/90 backdrop-blur-md border-t border-stone-200/50 flex items-center justify-between px-10 z-20 fixed bottom-0 left-0 right-0 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
+                  <button onClick={prevStep} disabled={taskStep === 0} className="flex items-center gap-2 px-6 py-3 rounded text-stone-600 hover:text-slate-900 disabled:opacity-30 font-serif font-bold transition-colors uppercase tracking-wider text-sm"><ChevronLeft size={18} /> Zurück</button>
+                  {taskStep < tasks.length - 1 && (
+                     <button onClick={nextStep} className="flex items-center gap-3 px-8 py-3 bg-slate-900 text-white rounded shadow-lg hover:bg-slate-800 hover:scale-105 transition-all font-serif font-bold tracking-wide text-lg border border-slate-950">Weiter <ChevronRight size={20} /></button>
+                  )}
+                </footer>
+              </div>
+            );
+          };
+
+          // Main Render
+          return (
+            <div className="w-full h-screen overflow-hidden font-sans text-slate-800 selection:bg-amber-100 bg-[#fdfbf7]">
+              {mainPhase === 0 ? <EntryPhase /> : <WorkPhase />}
+            </div>
+          );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<SchillerPresentation />);
+    </script>
+</body>
+</html>
