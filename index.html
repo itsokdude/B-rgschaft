@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { ChevronRight, ChevronLeft, BookOpen, Users, PenTool, Crown, Eye, Volume2, Sword, Scroll, CloudLightning, Hand, Handshake, Waves, Sun, Footprints, Heart, Scale, Swords, Lock } from 'lucide-react';
 
 const SchillerPresentation = () => {
-  // Navigation State
+  // --- STATE MANAGEMENT ---
   const [mainPhase, setMainPhase] = useState(0); 
   const [taskStep, setTaskStep] = useState(0); 
   const [visibleTheseIndex, setVisibleTheseIndex] = useState(-1);
   const [showTasks, setShowTasks] = useState(false);
   const [revealedCards, setRevealedCards] = useState({});
 
+  // --- HELPER FUNCTIONS ---
   const toggleCard = (step, cardIndex) => {
     const key = `${step}-${cardIndex}`;
     setRevealedCards(prev => ({
@@ -17,7 +18,7 @@ const SchillerPresentation = () => {
     }));
   };
 
-  // --- DATEN ---
+  // --- DATEN & INHALTE ---
   
   const thesen = [
     "Ein guter Freund muss immer Zeit für mich haben.",
@@ -77,13 +78,14 @@ const SchillerPresentation = () => {
           type: "Finale", 
           icon: <Scroll size={24} />,
           text: "'Ich sei, gewährt mir die Bitte,\nin eurem Bunde der Dritte!'",
-          isSecret: true // Verdeckt
+          isSecret: true // Initial verdeckt (Schloss-Icon)
         }
       ]
     }
   ];
 
-  // --- HANDLER ---
+  // --- NAVIGATION HANDLER ---
+  
   const nextStep = () => {
     setShowTasks(false); 
     setRevealedCards({}); 
@@ -99,13 +101,15 @@ const SchillerPresentation = () => {
     }
   };
 
-  // --- KOMPONENTEN ---
+  // --- VISUAL COMPONENTS ---
 
   const SceneVisual = ({ step }) => {
     if (step === 0) {
       return (
         <div className="relative w-64 h-64 mx-auto animate-fade-in">
-           <div className="absolute top-0 left-0 text-stone-700 transform -rotate-12 scale-110 opacity-80"><Sword size={140} strokeWidth={1} /></div>
+           <div className="absolute top-0 left-0 text-stone-700 transform -rotate-12 scale-110 opacity-80">
+             <Sword size={140} strokeWidth={1} />
+           </div>
            <div className="absolute bottom-4 right-4 text-amber-800 drop-shadow-lg transform rotate-6 bg-[#fdfbf7]/70 p-4 rounded-full border-4 border-amber-900/20 backdrop-blur-sm">
              <Handshake size={80} strokeWidth={1.5} />
            </div>
@@ -116,7 +120,9 @@ const SchillerPresentation = () => {
     if (step === 1) {
       return (
         <div className="relative w-64 h-64 mx-auto animate-fade-in text-blue-100">
-           <div className="absolute top-4 left-0"><Sun size={100} strokeWidth={1.5} className="text-amber-300/70 animate-pulse" /></div>
+           <div className="absolute top-4 left-0">
+             <Sun size={100} strokeWidth={1.5} className="text-amber-300/70 animate-pulse" />
+           </div>
            <div className="absolute bottom-0 left-0 w-full flex justify-center opacity-60">
               <Waves size={140} strokeWidth={1} className="-ml-16 text-blue-200" />
               <Waves size={140} strokeWidth={1} className="-ml-16 text-blue-300" />
@@ -131,12 +137,16 @@ const SchillerPresentation = () => {
     if (step === 2) {
       return (
         <div className="relative w-64 h-64 mx-auto animate-fade-in">
-           <div className="absolute top-0 left-1/2 -translate-x-1/2 text-amber-100 opacity-40"><Crown size={140} strokeWidth={1} /></div>
+           <div className="absolute top-0 left-1/2 -translate-x-1/2 text-amber-100 opacity-40">
+             <Crown size={140} strokeWidth={1} />
+           </div>
            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-red-600 drop-shadow-2xl z-10">
               <Heart size={100} strokeWidth={1.5} fill="#991b1b" fillOpacity={0.7} className="animate-pulse" />
            </div>
            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 text-amber-200 z-20 font-serif text-4xl font-bold">+</div>
-           <div className="absolute -right-4 bottom-12 text-amber-400"><Users size={60} strokeWidth={1.5} /></div>
+           <div className="absolute -right-4 bottom-12 text-amber-400">
+             <Users size={60} strokeWidth={1.5} />
+           </div>
         </div>
       );
     }
@@ -179,7 +189,8 @@ const SchillerPresentation = () => {
     );
   };
 
-  // Phase 0: Der Einstieg
+  // --- PHASE 0: EINSTIEG ---
+  
   const EntryPhase = () => (
     <div className="h-full flex flex-col items-center justify-center p-8 bg-[#fdfbf7] relative overflow-hidden">
       <div className="absolute inset-0 opacity-20 pointer-events-none mix-blend-multiply" 
@@ -260,16 +271,16 @@ const SchillerPresentation = () => {
     </div>
   );
 
-  // Phase 1: Die Hauptansicht (Zentriertes Layout ohne Video)
+  // --- PHASE 1: HAUPTTEIL (ARBEITSPHASE) ---
+  
   const WorkPhase = () => {
     const currentTask = tasks[taskStep];
 
     return (
       <div className="h-full flex flex-col bg-[#fdfbf7] relative overflow-hidden">
-        {/* Dynamischer, atmosphärischer Hintergrund-Overlay für jede Phase */}
+        {/* Background Overlays */}
         <div className={`absolute inset-0 transition-colors duration-1000 ${currentTask.bgOverlay}`}></div>
         
-        {/* Antike Textur darüber */}
         <div className="absolute inset-0 opacity-30 pointer-events-none mix-blend-overlay" 
              style={{
                 backgroundImage: 'radial-gradient(#78716c 1px, transparent 1px)', 
@@ -277,7 +288,7 @@ const SchillerPresentation = () => {
              }}>
         </div>
         
-        {/* Header - Minimalistischer */}
+        {/* Header */}
         <header className="h-20 bg-[#fdfbf7]/80 backdrop-blur-md border-b border-double border-stone-300/50 flex items-center justify-between px-8 z-20 sticky top-0 shadow-sm">
           <h2 className="text-2xl font-serif font-bold text-slate-900 flex items-center gap-3">
             <span className="w-8 h-8 bg-red-900 text-white flex items-center justify-center rounded font-serif text-lg shadow-sm">S</span>
@@ -291,11 +302,11 @@ const SchillerPresentation = () => {
           </div>
         </header>
 
-        {/* Main Centered Content */}
+        {/* Content Area */}
         <div className="flex-grow overflow-y-auto flex flex-col items-center p-6 md:p-12 scroll-smooth z-10">
           <div className="max-w-5xl w-full space-y-12 animate-fade-in pb-32">
             
-            {/* 1. Instruction Section */}
+            {/* Instruction Section */}
             <div className="text-center space-y-6 relative text-slate-900">
               
               <div className="mb-8 transform scale-110 filter drop-shadow-lg">
@@ -330,7 +341,7 @@ const SchillerPresentation = () => {
               )}
             </div>
 
-            {/* 2. Tasks Grid */}
+            {/* Tasks Grid */}
             {showTasks && (
               <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto w-full animate-slide-up">
                 {currentTask.questions.map((q, i) => (
@@ -365,6 +376,8 @@ const SchillerPresentation = () => {
     );
   };
 
+  // --- MAIN RENDER ---
+  
   return (
     <div className="w-full h-screen overflow-hidden font-sans text-slate-800 selection:bg-amber-100 bg-[#fdfbf7]">
       <style>{`
