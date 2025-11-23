@@ -5,22 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Die Bürgschaft - Interaktive Tafel</title>
     
-    <!-- React laden -->
+    <!-- 1. React Framework laden -->
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     
-    <!-- Babel laden (damit der Code im Browser läuft) -->
+    <!-- 2. Babel laden -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
-    <!-- Tailwind CSS laden (für das Aussehen) -->
+    <!-- 3. Tailwind CSS laden -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Schriftart laden -->
+    <!-- Schriftarten -->
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
         body { font-family: 'Lato', sans-serif; background-color: #fdfbf7; }
         h1, h2, h3, .font-serif { font-family: 'Playfair Display', serif; }
+        
+        /* Schicke Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a29e; }
         
         /* Animationen */
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -33,16 +39,14 @@
 <body>
     <div id="root"></div>
 
-    <!-- HIER BEGINNT DER PROGRAMMCODE -->
     <script type="text/babel">
         const { useState } = React;
 
-        // --- 1. ICONS (Direkt eingebaut - keine Import-Fehler mehr) ---
+        // --- ICONS (Direkt definiert, keine externen Abhängigkeiten mehr!) ---
         const Icon = ({ children, className, size = 24, strokeWidth = 2 }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
         );
 
-        // Alle benötigten Symbole
         const ChevronRight = (p) => <Icon {...p}><path d="m9 18 6-6-6-6"/></Icon>;
         const ChevronLeft = (p) => <Icon {...p}><path d="m15 18-6-6 6-6"/></Icon>;
         const Lock = (p) => <Icon {...p}><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></Icon>;
@@ -54,7 +58,6 @@
         const Hand = (p) => <Icon {...p}><path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v2"/><path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></Icon>;
         const BookOpen = (p) => <Icon {...p}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></Icon>;
         const Sword = (p) => <Icon {...p}><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/><line x1="13" y1="19" x2="19" y2="13"/><line x1="16" y1="16" x2="20" y2="20"/><line x1="19" y1="21" x2="21" y2="19"/></Icon>;
-        const Handshake = (p) => <Icon {...p}><path d="m11 17 2 2a6 6 0 0 0 8-8l-2-2 2-2-2-2-2 2-2-2-2 2-2 2"/><path d="M11 17a6 6 0 0 1-8-8l2-2 2 2 2-2 2 2 2 2-2 2"/></Icon>;
         const CloudLightning = (p) => <Icon {...p}><path d="M6 16.326A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="m13 12-3 5h4l-3 5"/></Icon>;
         const Waves = (p) => <Icon {...p}><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></Icon>;
         const Sun = (p) => <Icon {...p}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></Icon>;
@@ -63,7 +66,6 @@
         const Heart = (p) => <Icon {...p}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></Icon>;
         const Users = (p) => <Icon {...p}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></Icon>;
 
-        // --- 2. DIE APP-LOGIK ---
         const SchillerPresentation = () => {
           const [mainPhase, setMainPhase] = useState(0); 
           const [taskStep, setTaskStep] = useState(0); 
@@ -136,7 +138,6 @@
             }
           ];
 
-          // Navigation
           const nextStep = () => {
             setShowTasks(false);
             setRevealedCards({});
@@ -152,15 +153,14 @@
             }
           };
 
-          // Visuelle Komponenten
           const SceneVisual = ({ step }) => {
             if (step === 0) {
               return (
                 <div className="relative w-64 h-64 mx-auto animate-fade-in">
                    <div className="absolute top-0 left-0 text-stone-700 transform -rotate-12 scale-110 opacity-80"><Sword size={140} strokeWidth={1} /></div>
-                   {/* HANDSCHLAG SYMBOL - Hier angepasst (gerade, deutlich) */}
+                   {/* SCHRIFTROLLE statt Handschlag */}
                    <div className="absolute bottom-4 right-4 text-amber-800 drop-shadow-lg bg-[#fdfbf7]/90 p-5 rounded-full border-4 border-amber-900/20 backdrop-blur-sm">
-                     <Handshake size={80} strokeWidth={2} />
+                     <Scroll size={80} strokeWidth={1.5} />
                    </div>
                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border-2 border-dashed border-stone-600 rounded-full animate-spin-slow opacity-40"></div>
                 </div>
@@ -231,7 +231,6 @@
             );
           };
 
-          // --- PHASE 0: EINSTIEG ---
           const EntryPhase = () => (
             <div className="h-full flex flex-col items-center justify-center p-8 bg-[#fdfbf7] relative overflow-hidden">
               <div className="absolute inset-0 opacity-20 pointer-events-none mix-blend-multiply" 
@@ -286,13 +285,11 @@
             </div>
           );
 
-          // --- PHASE 1: HAUPTTEIL (ARBEITSPHASE) ---
           const WorkPhase = () => {
             const currentTask = tasks[taskStep];
 
             return (
               <div className="h-full flex flex-col bg-[#fdfbf7] relative overflow-hidden">
-                {/* Background Overlays */}
                 <div className={`absolute inset-0 transition-colors duration-1000 ${currentTask.bgOverlay}`}></div>
                 <div className="absolute inset-0 opacity-30 pointer-events-none mix-blend-overlay" style={{backgroundImage: 'radial-gradient(#78716c 1px, transparent 1px)', backgroundSize: '32px 32px'}}></div>
                 
@@ -352,7 +349,6 @@
             );
           };
 
-          // Main Render
           return (
             <div className="w-full h-screen overflow-hidden font-sans text-slate-800 selection:bg-amber-100 bg-[#fdfbf7]">
               {mainPhase === 0 ? <EntryPhase /> : <WorkPhase />}
